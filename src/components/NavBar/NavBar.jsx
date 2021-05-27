@@ -12,12 +12,12 @@ const NavBar = ({ totalItems}) => {
         <div>
             <AppBar position='fixed' className={classes.appBar} color='inherit'>
                 <Toolbar>
-                    <Typography component={Link} to='/' variant='h6' className={classes.title} color="inherit">
+                    <Typography component={Link} to='/OnlineShop' variant='h6' className={classes.title} color="inherit">
                         <img src={logo} alt='Commerce.js' height='25px' className={classes.image}/>
                         Gaming Shop
                     </Typography>
                     <div className={classes.grow}/>
-                    { location.pathname === '/' && (
+                    { location.pathname === '/OnlineShop' && (
                         <div className={classes.button}>
                         <IconButton component={Link} to='/Cart' aria-label='Show Cart Items' color='inherit'>
                             <Badge badgeContent={totalItems} color='secondary'>
