@@ -4,22 +4,25 @@ import useStyles from './styles'
 import AdressForm from '../AdressForm'
 import PaymentForm from '../PaymentForm'
 import { commerce } from '../../../lib/commerce'
+import { Link, useHistory } from 'react-router-dom'
 
 const steps = ['Shipping addres', 'Payment details']
 
-const Checkout = ({ cart }) => {
+const Checkout = ({ cart, order, onCaptureCheckOut, error }) => {
     const [activeStep, setActiveStep] = useState(0)
     const [checkoutToken, setcheckoutToken] = useState(null)
     const [shippingData, setShippingData ] = useState({})
+    const [ isFinished, setIsFinished ] = useState(false) // mockup fake credit card data
     const classes = useStyles()
+    const history = useHistory()
+
     useEffect(() => {
         const generateToken = async () => {
             try {
                 const token = await commerce.checkout.generateToken(cart.id, { type: 'cart'})
-
                 setcheckoutToken(token)
             } catch (error) {
-
+              history.pushState('/')
             }
         }
         generateToken();
@@ -30,18 +33,53 @@ const Checkout = ({ cart }) => {
       nextStep()
     }
 
+    const timeOut = () => { //mockup func for fake credit card data
+     setTimeout(() => {
+        setIsFinished(true)  
+     }, 3000);
+    };
+
     const nextStep = () => setActiveStep((prevActiveStep) => prevActiveStep + 1);
     const backStep = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
 
-    const Confirmation = () => {
-        <div>
-            confirmation
+    let Confirmation = () => order.customer ? (
+        <>
+          <div>
+            <Typography variant='h5'>Thank You for Purchase { order.customer.firstname }</Typography>
+            <Divider className={classes.divider} />
+            <Typography variant='subtitle2'>Order ref: { order.customer_reference } </Typography>
+          </div>
+          <br />
+          <Button component={Link} to='/' variant='outlined' type='button'>Back to Home Page</Button>
+        </>
+    ) : isFinished ? (
+        // mockup part for fake cc data
+            <>
+          <div>
+            <Typography variant='h5'>Thank You for Purchase</Typography>
+            <Divider className={classes.divider} />
+            <Typography variant='subtitle2'>Order ref: '11231231'</Typography>
+          </div>
+          <br />
+          <Button component={Link} to='/' variant='outlined' type='button'>Back to Home Page</Button>
+        </>
+    ) : ( 
+        <div className={classes.spinner}>
+         <CircularProgress />
         </div>
+    );
+
+    if (error) {
+        <>
+        <Typography variant='h5'>Error: {error}</Typography>
+        <br />
+        <Button component={Link} to='/' variant='outlined' type='button'>Back to Home Page</Button>
+        </>
     }
 
     const Form = () => activeStep === 0
     ? <AdressForm checkoutToken={checkoutToken} test={test} /> : 
-    <PaymentForm shippingData={shippingData} checkoutToken={checkoutToken} backStep={backStep}/>
+    <PaymentForm shippingData={shippingData} checkoutToken={checkoutToken} nextStep={nextStep} backStep={backStep} onCaptureCheckOut={onCaptureCheckOut} timeOut={timeOut}/>
 
     return (
         <>
@@ -64,4 +102,4 @@ const Checkout = ({ cart }) => {
     )
 }
 
-export default Checkout
+export default Checkout;
