@@ -3,7 +3,7 @@ Online Shop made with React, material ui and commerce.js as backend
 
 For testing purposes transaction finish is mockup so it don't send confirmation data.
 
-LIVE VERSION -->  
+LIVE VERSION -->  https://adrianoos.github.io/OnlineShop/
 
 
 # Getting Started with Create React App
